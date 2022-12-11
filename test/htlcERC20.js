@@ -235,7 +235,7 @@ contract('HashedTimelockERC20', accounts => {
     const contractId = txContractId(newContractTx)
 
     // wait one second so we move past the timelock time
-    return new Promise((resolve, reject) =>
+    return new Promise(() =>
       setTimeout(async () => {
         // attempt to get the refund now we've moved past the timelock time
         const balBefore = await token.balanceOf(sender)
@@ -287,7 +287,7 @@ contract('HashedTimelockERC20', accounts => {
     })
 
     // wait one second so we move past the timelock time
-    return new Promise((resolve, reject) =>
+    return new Promise((resolve) =>
       setTimeout(async () => {
         // attempt to get the refund now we've moved past the timelock time
         await htlc.refund(contractId1, {from: sender})

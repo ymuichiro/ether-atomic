@@ -247,7 +247,7 @@ contract('HashedTimelock', accounts => {
     const contractId = txContractId(newContractTx)
 
     // wait one second so we move past the timelock time
-    return new Promise((resolve, reject) =>
+    return new Promise(() =>
       setTimeout(async () => {
         const balBefore = await getBalance(sender)
         const refundTx = await htlc.refund(contractId, {from: sender})

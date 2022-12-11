@@ -1,13 +1,9 @@
 const {assertEqualBN} = require('./helper/assert')
 const {
-  bufToStr,
   htlcERC20ArrayToObj,
-  isSha256Hash,
   newSecretHashPair,
   nowSeconds,
-  random32,
   txContractId,
-  txLoggedArgs,
 } = require('./helper/utils')
 const promisify = require('util').promisify
 const sleep = promisify(require('timers').setTimeout)
@@ -21,7 +17,6 @@ const PaymentTokenContract = artifacts.require('./helper/BobERC20.sol')
 
 // some testing data
 let timeLock2Sec
-const tokenAmount = 5
 
 contract('HashedTimelock swap between ERC721 token and ERC20 token (Delivery vs. Payment)', accounts => {
   // owner of CommodityToken and wants swap for PaymentTokens
@@ -40,9 +35,7 @@ contract('HashedTimelock swap between ERC721 token and ERC20 token (Delivery vs.
   let htlcPaymentTokens
 
   // swap contract ID for Commodity delivery Alice -> Bob
-  let deliveryContractId
   // swap contract ID for payment Bob -> Alice
-  let paymentContractId
 
   // shared b/w the two swap contracts in both directions
   let hashPair
@@ -51,11 +44,13 @@ contract('HashedTimelock swap between ERC721 token and ERC20 token (Delivery vs.
   // to make the flow more explicitly reflect the real world sequence of events
   let learnedSecret
 
+  let a2bSwapId
+
   before(async () => {
     htlcCommodityTokens = await HashedTimelockERC721.new()
     htlcPaymentTokens = await HashedTimelockERC20.new()
 
-    CommodityTokens = await CommodityTokenContract.new()
+    CommodityTokens = await CommodityTokenContract.new(1000)
     PaymentTokens = await PaymentTokenContract.new(1000)
 
     // so Alice has some tokens to trade
@@ -114,6 +109,7 @@ contract('HashedTimelock swap between ERC721 token and ERC20 token (Delivery vs.
   // // hash lock as Alice' side of the deal, so that he can be guaranteed Alice must
   // // disclose the secret to unlock the BobERC721 tokens transfer, and the same secret can then
   // // be used to unlock the AliceERC721 transfer
+  let b2aSwapId = ""
   it('Step 2: Bob sets up a swap with Alice in the payment contract', async () => {
     // in a real world swap contract, the counterparty's swap timeout period should be shorter
     // but that does not affect the ideal workflow that we are testing here
@@ -194,7 +190,7 @@ contract('HashedTimelock swap between ERC721 token and ERC20 token (Delivery vs.
         hashlock: hashPair.hash,
         timelock: timeLock2Sec
       }, Bob, Alice)
-      b2aSwapId = txContractId(newSwapTx)
+      const b2aSwapId = txContractId(newSwapTx)
 
       await assertTokenBal(CommodityTokens, htlcCommodityTokens.address, 1, 'HTLC should own 1 Commodity token')
       await assertTokenBal(PaymentTokens, htlcPaymentTokens.address, 50, 'HTLC should own 50 payment tokens')

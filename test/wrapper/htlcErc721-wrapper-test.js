@@ -20,7 +20,7 @@ contract('HashedTimelockErc721Wrapper', accounts => {
   const sender = accounts[1]
   const receiver = accounts[2]
   const tokenSupply = 1000
-  const provider = new web3.providers.HttpProvider("http://localhost:7545");
+  const provider = new web3.providers.HttpProvider("http://localhost:7545")
 
   let htlcWrapper
   let token
@@ -34,7 +34,7 @@ contract('HashedTimelockErc721Wrapper', accounts => {
   }
 
   before(async () => {
-    htlcWrapper = new HtlcWrapperErc721(HashedTimelockERC721, provider, null);
+    htlcWrapper = new HtlcWrapperErc721(HashedTimelockERC721, provider, null)
     let address = await HashedTimelockERC721.new()
     htlcWrapper.setAddress(address.address)
     token = await AliceERC721.new(tokenSupply)

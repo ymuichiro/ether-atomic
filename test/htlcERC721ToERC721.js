@@ -1,13 +1,9 @@
 const {assertEqualBN} = require('./helper/assert')
 const {
-  bufToStr,
   htlcERC20ArrayToObj,
-  isSha256Hash,
   newSecretHashPair,
   nowSeconds,
-  random32,
   txContractId,
-  txLoggedArgs,
 } = require('./helper/utils')
 const promisify = require('util').promisify
 const sleep = promisify(require('timers').setTimeout)
@@ -19,7 +15,6 @@ const BobERC721TokenContract = artifacts.require('./helper/BobERC721.sol')
 
 // some testing data
 let timeLock2Sec
-const tokenAmount = 5
 
 contract('HashedTimelock swap between two ERC721 tokens', accounts => {
   const Alice = accounts[1] // owner of AliceERC721 and wants swap for BobERC721
@@ -43,7 +38,7 @@ contract('HashedTimelock swap between two ERC721 tokens', accounts => {
     // that the target Token to be transferred between the two counterparties runs on
     htlc = await HashedTimelockERC721.new()
 
-    AliceERC721 = await AliceERC721TokenContract.new()
+    AliceERC721 = await AliceERC721TokenContract.new(1000)
     BobERC721 = await BobERC721TokenContract.new()
 
     await AliceERC721.mint(Alice, 1) // so Alice has some tokens to trade
